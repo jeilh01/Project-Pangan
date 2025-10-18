@@ -1,4 +1,3 @@
-package ridehailingsystem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,15 +13,15 @@ public class RideHailingSystem {
     private static final double ADDITIONAL_KM_RATE = 20.00; 
 
     
-    private static List<Booking> bookings = new ArrayList<>();
+    private static List<Booking> bookings = new ArrayList<>(); // created new array list with variable bookings
  
-    private static AtomicInteger nextId = new AtomicInteger(1);
+    private static AtomicInteger nextId = new AtomicInteger(1); // set static id for numbering
 
    
     private static final DecimalFormat CURRENCY_FORMAT = new DecimalFormat("#,##0.00");
     private static final DecimalFormat DISTANCE_FORMAT = new DecimalFormat("0.0");
 
-   
+    // created class record
     record Booking(
         int id,
         String date,
@@ -38,9 +37,10 @@ public class RideHailingSystem {
         Scanner scanner = new Scanner(System.in);
 
         
-        addSampleBookings();
+        addSampleBookings(); // calls the sample bookings
 
-       
+       // validation of choices
+       // set to true for infinite loop
         while (true) {
             displayMenu();
             String choice = scanner.nextLine().trim().toLowerCase();
@@ -73,7 +73,7 @@ public class RideHailingSystem {
         }
     }
 
-    
+    // method for adding the sample booking
     private static void addSampleBookings() {
         
         bookings.add(new Booking(
@@ -93,25 +93,24 @@ public class RideHailingSystem {
         ));
     }
 
-    
+    // method to display menu
     private static void displayMenu() {
-        System.out.println("\n");
-        System.out.println("RIDE-HAILING BOOKING SYSTEM - MENU");
-        System.out.println("");
-        System.out.println("a. View All Bookings");
-        System.out.println("b. Book a Ride");
-        System.out.println("c. Delete a Booking");
-        System.out.println("d. Generate Booking Report");
-        System.out.println("e. Exit Application");
-        System.out.println("");
-        System.out.print("Enter your choice (a-e): ");
+        System.out.println("\n RIDE-HAILING BOOKING SYSTEM - MENU \n");
+        System.out.println("A. View All Bookings");
+        System.out.println("B. Book a Ride");
+        System.out.println("C. Delete a Booking");
+        System.out.println("D. Generate Booking Report");
+        System.out.println("E. Exit Application \n");
+        System.out.print("Enter your choice (A-E): ");
     }
 
-    
+    // method for calculating fare
     private static double calculateFare(double distance) {
+
+        // condition to check if distance inserted is negative
         if (distance <= 0) {
-            return 0.0;
-        } else if (distance <= 1.0) {
+            return 0.0; // return to the computation as 0
+        } else if (distance <= 1.0) { // returns normal pricing
            
             return INITIAL_KM_COST;
         } else {
@@ -121,47 +120,56 @@ public class RideHailingSystem {
         }
     }
 
-    
-    private static void viewAllBookings() {
+    // method for viewing all bookings
+        private static void viewAllBookings() {
         System.out.println("VIEW ALL BOOKINGS");
+
+        // condition to check if bookings array list is empty
         if (bookings.isEmpty()) {
             System.out.println("No bookings found.");
             return;
         }
 
-        
-        
-        System.out.printf("#", "Date", "Time", "Passenger Name", "Pick-up Location", "Drop-off Location", "Distance (km)", "Fare (PHP)");
-        
+        // table format
+        System.out.printf("%-5s %-12s %-10s %-18s %-20s %-20s %-15s %-12s%n",
+                        "#", "Date", "Time", "Passenger Name", "Pick-up Location", "Drop-off Location", "Distance (km)", "Fare (PHP)");
 
-        
+        // loop inside the booking list and print out the following objects
         for (Booking b : bookings) {
-            System.out.printf( b.id(),b.date(), b.time(),b.passengerName(), b.pickupLocation(), b.dropoffLocation(), DISTANCE_FORMAT.format(b.distance()),CURRENCY_FORMAT.format(b.fare())
-            );
+            System.out.printf("%-5d %-12s %-10s %-18s %-20s %-20s %-15s %-12s%n",
+            b.id(), b.date(), b.time(), b.passengerName(), b.pickupLocation(), b.dropoffLocation(),
+            DISTANCE_FORMAT.format(b.distance()), CURRENCY_FORMAT.format(b.fare()));
         }
-       
     }
 
+        // method for booking a ride
         private static void bookRide(Scanner scanner) {
         System.out.println("BOOK A RIDE");
 
+        // asks for user name
         System.out.print("a. Enter Passenger Name: ");
         String name = scanner.nextLine();
 
+        // asks for pick up date
         System.out.print("b. Enter Date (e.g., MM/DD/YYYY): ");
         String date = scanner.nextLine();
 
+        // asks for pick up enter time
         System.out.print("c. Enter Time (e.g., HH:MM AM/PM): ");
         String time = scanner.nextLine();
 
+        // asks for user pickup location
         System.out.print("d. Enter Pickup Location: ");
         String pickup = scanner.nextLine();
 
+        // asks for user dropoff
         System.out.print("e. Enter Dropoff Location: ");
         String dropoff = scanner.nextLine();
 
         double distance = -1;
-        while (distance < 0) {
+
+        // loop condition when user inputs 0 or negative numbers in the input
+        while (distance <= 0) {
             System.out.print("f. Enter Distance (km) (e.g., 5.5): ");
             try {
                
@@ -177,11 +185,12 @@ public class RideHailingSystem {
 
         
         double fare = calculateFare(distance);
+
         Booking newBooking = new Booking(
             nextId.getAndIncrement(), date, time, name, pickup, dropoff, distance, fare
         );
 
-        bookings.add(newBooking);
+        bookings.add(newBooking); // adds the user inputs to the bookings database
 
         System.out.println("\n");
         System.out.println("SUCCESS! Ride booked.");
@@ -189,7 +198,7 @@ public class RideHailingSystem {
         System.out.println("Distance: " + DISTANCE_FORMAT.format(newBooking.distance()) + " km");
         System.out.println("FARE: PHP " + CURRENCY_FORMAT.format(newBooking.fare()));
         
-      
+      // conditioning for distance pricing
         if (newBooking.distance() <= 1.0) {
             System.out.println("Formula: PHP " + CURRENCY_FORMAT.format(INITIAL_KM_COST) + " (Fixed for 1 km or less)");
         } else {
@@ -200,20 +209,22 @@ public class RideHailingSystem {
         System.out.println("");
     }
 
-    
+    // method for deleting a book
     private static void deleteBooking(Scanner scanner) {
+
+        // condition to check if booking array list is empty
         if (bookings.isEmpty()) {
             System.out.println("No bookings available to delete.");
             return;
         }
 
         
-        viewAllBookings();
+        viewAllBookings(); // shows all booking
         System.out.println("\nDELETE A BOOKING");
         System.out.print("Enter the Booking ID (#) to delete: ");
 
         try {
-            int idToDelete = Integer.parseInt(scanner.nextLine());
+            int idToDelete = Integer.parseInt(scanner.nextLine()); // converts string to int
             boolean removed = bookings.removeIf(booking -> booking.id() == idToDelete);
 
             if (removed) {
@@ -226,10 +237,11 @@ public class RideHailingSystem {
         }
     }
 
-   
+   // method to generate report
     private static void generateReport() {
         System.out.println("GENERATE BOOKING REPORT");
 
+        // checks if booking array is empty
         if (bookings.isEmpty()) {
             System.out.println("No bookings to report on.");
             return;
@@ -239,9 +251,10 @@ public class RideHailingSystem {
         double totalDistance = 0;
         double totalRevenue = 0;
 
+        // loops inside the booking list
         for (Booking b : bookings) {
-            totalDistance += b.distance();
-            totalRevenue += b.fare();
+            totalDistance += b.distance(); // adds to the total distance
+            totalRevenue += b.fare(); // adds to the total revenue
         }
 
        
